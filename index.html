@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twitch Panel - Mission Control</title>
+    <title>Odyssey Quest - Mission Control</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -29,7 +29,7 @@
     </style>
 </head>
 <body>
-    <h1>Mission Control Panel</h1>
+    <h1>Odyssey Quest - Mission Control</h1>
     <button class="button" onclick="sendCommand('!join')">Join Mission</button>
     <button class="button" onclick="sendCommand('!depart')">Depart on Mission</button>
     <button class="button" onclick="sendCommand('!land')">Land on Planet</button>
@@ -40,9 +40,9 @@
     <button class="button" onclick="sendCommand('!return')">Return to Mothership</button>
     
     <script>
-        const OAUTH_TOKEN = "oauth:qrpxsrwzlzx25j8jv6mjj80orh7qrk";  // Replace with your token
-        const BOT_USERNAME = "elysian_odyssey";  // Replace with your Twitch username
-        const CHANNEL_NAME = "#elysian_odyssey";  // Replace with your Twitch channel name
+        const OAUTH_TOKEN = "oauth:9bh5ej5iz0ewafin7ei17gg3clzigm";  // Updated OAuth token
+        const BOT_USERNAME = "elysian_odyssey";  // Twitch username
+        const CHANNEL_NAME = "#elysian_odyssey";  // Twitch channel name
         
         const socket = new WebSocket("wss://irc-ws.chat.twitch.tv");
         
@@ -51,13 +51,24 @@
             socket.send(`PASS ${OAUTH_TOKEN}`);
             socket.send(`NICK ${BOT_USERNAME}`);
             socket.send(`JOIN ${CHANNEL_NAME}`);
+            
+            // Request necessary chat capabilities
+            socket.send("CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership");
+        };
+        
+        socket.onerror = function (error) {
+            console.log("WebSocket Error: ", error);
+        };
+        
+        socket.onmessage = function (event) {
+            console.log("Message from Twitch Chat: ", event.data);
         };
         
         function sendCommand(command) {
             if (socket.readyState === WebSocket.OPEN) {
                 const message = `PRIVMSG ${CHANNEL_NAME} :${command}`;
                 socket.send(message);
-                console.log("Command sent: " + command);
+                console.log("Command sent to chat: " + command);
             } else {
                 console.log("Error: Not connected to Twitch Chat");
             }
