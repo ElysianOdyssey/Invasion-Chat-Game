@@ -40,9 +40,27 @@
     <button class="button" onclick="sendCommand('!return')">Return to Mothership</button>
     
     <script>
+        const OAUTH_TOKEN = "oauth:9bh5ej5iz0ewafin7ei17gg3clzigm";  // Replace with your token
+        const BOT_USERNAME = "YOUR_TWITCH_USERNAME";  // Replace with your Twitch username
+        const CHANNEL_NAME = "#YOUR_CHANNEL_NAME";  // Replace with your Twitch channel name
+        
+        const socket = new WebSocket("wss://irc-ws.chat.twitch.tv");
+        
+        socket.onopen = function () {
+            console.log("Connected to Twitch Chat");
+            socket.send(`PASS ${OAUTH_TOKEN}`);
+            socket.send(`NICK ${BOT_USERNAME}`);
+            socket.send(`JOIN ${CHANNEL_NAME}`);
+        };
+        
         function sendCommand(command) {
-            console.log("Command sent: " + command);
-            // This will later be linked to Twitch chat API
+            if (socket.readyState === WebSocket.OPEN) {
+                const message = `PRIVMSG ${CHANNEL_NAME} :${command}`;
+                socket.send(message);
+                console.log("Command sent: " + command);
+            } else {
+                console.log("Error: Not connected to Twitch Chat");
+            }
         }
     </script>
 </body>
