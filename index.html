@@ -77,19 +77,30 @@
         let playerUsername = "Unknown Player";
         let twitchLoaded = false;
 
-        Twitch.ext.onAuthorized((auth) => {
-            console.log("✅ Twitch Extension Authorized:", auth);
-            playerUsername = auth.userId ? `User-${auth.userId}` : "Unknown Player";
-            document.getElementById("status").textContent = `Welcome, ${playerUsername}!`;
-            twitchLoaded = true;
-            requestAnimationFrame(() => showPage("mission"));
-        });
-        
-        function showPage(page) {
-            if (!twitchLoaded) {
-                console.warn("⚠️ Twitch Extension not fully loaded yet.");
+        function initializeTwitchExtension() {
+            if (typeof Twitch.ext === "undefined") {
+                console.error("❌ Twitch Extension API not available. Retrying in 3 seconds...");
+                setTimeout(initializeTwitchExtension, 3000);
                 return;
             }
+            console.log("✅ Twitch Extension API detected.");
+
+            Twitch.ext.onAuthorized((auth) => {
+                console.log("✅ Twitch Extension Authorized:", auth);
+                playerUsername = auth.userId ? `User-${auth.userId}` : "Unknown Player";
+                document.getElementById("status").textContent = `Welcome, ${playerUsername}!`;
+                twitchLoaded = true;
+            });
+            
+            Twitch.ext.onContext((context) => {
+                console.log("✅ Twitch Extension Context Loaded:", context);
+                if (twitchLoaded) {
+                    requestAnimationFrame(() => showPage("mission"));
+                }
+            });
+        }
+
+        function showPage(page) {
             let content = document.getElementById("content");
             if (!content) return;
             content.innerHTML = "";
@@ -130,7 +141,8 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("📌 DOM Loaded, Waiting for Twitch Authorization...");
+            console.log("📌 DOM Loaded, Initializing Twitch Extension...");
+            initializeTwitchExtension();
         });
     </script>
 </body>
