@@ -12,6 +12,7 @@
             color: white;
             text-align: center;
             padding: 20px;
+            overflow: hidden;
         }
         .nav-bar {
             display: flex;
@@ -78,32 +79,46 @@
 
         function showPage(page) {
             let content = document.getElementById("content");
+            console.log("🔹 Switching to Page:", page);
+            if (!content) return;
+
+            content.innerHTML = "";
+            let title = document.createElement("h2");
+            let desc = document.createElement("p");
+            
             switch (page) {
                 case "log":
-                    content.innerHTML = "<h2>Navigation Log</h2><p>Tracking missions and outcomes...</p>";
+                    title.textContent = "Navigation Log";
+                    desc.textContent = "Tracking missions and outcomes...";
                     break;
                 case "inventory":
-                    content.innerHTML = "<h2>Inventory</h2><p>Displaying collected items...</p>";
+                    title.textContent = "Inventory";
+                    desc.textContent = "Displaying collected items...";
                     break;
                 case "mission":
-                    content.innerHTML = `<h1>Odyssey Quest - Mission Control</h1>
-                        <button class='button' onclick='sendCommand("!join")'>Join Mission</button>
-                        <button class='button' onclick='sendCommand("!depart")'>Depart on Mission</button>
-                        <button class='button' onclick='sendCommand("!land")'>Land on Planet</button>
-                        <button class='button' onclick='sendCommand("!changecourse")'>Change Course</button>
-                        <button class='button' onclick='sendCommand("!explore")'>Explore</button>
-                        <button class='button' onclick='sendCommand("!mine")'>Mine Resources</button>
-                        <button class='button' onclick='sendCommand("!scan")'>Scan Environment</button>
-                        <button class='button' onclick='sendCommand("!return")'>Return to Mothership</button>`;
+                    title.textContent = "Mission Control";
+                    desc.textContent = "Manage your space exploration missions.";
+                    let buttons = ["!join", "!depart", "!land", "!changecourse", "!explore", "!mine", "!scan", "!return"];
+                    buttons.forEach(cmd => {
+                        let btn = document.createElement("button");
+                        btn.textContent = cmd;
+                        btn.className = "button";
+                        btn.onclick = () => sendCommand(cmd);
+                        content.appendChild(btn);
+                    });
                     break;
                 case "ship":
-                    content.innerHTML = "<h2>Ship Status</h2><p>Displaying ship damage, fuel levels, and repairs...</p>";
+                    title.textContent = "Ship Status";
+                    desc.textContent = "Displaying ship damage, fuel levels, and repairs...";
                     break;
                 default:
-                    content.innerHTML = "<h2>Welcome to Odyssey Quest</h2><p>Select a menu option above.</p>";
+                    title.textContent = "Welcome to Odyssey Quest";
+                    desc.textContent = "Select a menu option above.";
             }
+            content.appendChild(title);
+            content.appendChild(desc);
         }
-        
+
         Twitch.ext.onAuthorized(function(auth) {
             console.log("✅ Twitch Extension Authorized:", auth);
             playerUsername = auth.userId ? `User-${auth.userId}` : "Unknown Player";
