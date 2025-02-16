@@ -79,7 +79,9 @@
     
     <script>
         const CHANNEL_NAME = "#elysian_odyssey";
-        let playerUsername = "Unknown Player"; // Default until we fetch the username
+        let playerUsername = "Unknown Player";
+        let socket;
+        
         function getTwitchUsername() {
             const params = new URLSearchParams(window.location.search);
             if (params.has("username")) {
@@ -88,13 +90,8 @@
             } else {
                 console.warn("⚠️ No username parameter found in URL.");
             }
-        } // Default until we fetch the username
-        function getTwitchUsername() {
-            const params = new URLSearchParams(window.location.search);
-            if (params.has("username")) {
-                playerUsername // Default in case we can't fetch username
-        let socket;
-
+        }
+        
         function connectToTwitch() {
             socket = new WebSocket("wss://irc-ws.chat.twitch.tv");
             
@@ -105,68 +102,17 @@
                 socket.send(`JOIN ${CHANNEL_NAME}`);
                 socket.send("CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership");
             };
-
+            
             socket.onerror = function (error) {
                 console.error("❌ WebSocket Error: ", error);
             };
             
-            socket.onclose = functiodocument.addEventListener('DOMContentLoaded', () => {
-            getTwitchUsername();
-        });        console.warn(`⚠️ Disconnected from Twitch Chat (Code: ${event.code}). Reconnecting in 5 seconds...`);
+            socket.onclose = function (event) {
+                console.warn(`⚠️ Disconnected from Twitch Chat (Code: ${event.code}). Reconnecting in 5 seconds...`);
                 setTimeout(connectToTwitch, 5000);
             };
         }
         
-        getTwitchUsername();
-        connectToTwitch();
-        let playerUsername = "Unknown Player"; // Default in case we can't fet
-        function getTwitchUsername() {
-            fetch('https://id.twitch.tv/oauth2/validate', {
-                headers: { 'Authorization': 'Bearer 0fy6vjfalfh3c1h4l5rp6n4ak19xvg' }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.login) {
-                    playerUsername = data.login;
-                    console.log("✅ Twitch Username Captured:", playerUsername);
-                }
-            })
-            .catch(error => console.error("❌ Failed to fetch username:", error));
-        }
-        }
-        getTwitchUsername();
-        
-        function showPage(page) {
-            if (socket.readyState !== WebSocket.OPEN) {
-                console.warn('WebSocket is not open. Attempting to reconnect...');
-                connectToTwitch();
-            }
-            document.getElementById('content').innerHTML = getPageContent(page);
-        }
-
-        function getPageContent(page) {
-            switch (page) {
-                case 'log':
-                    return '<h2>Navigation Log</h2><p>Tracking all missions and outcomes...</p>';
-                case 'inventory':
-                    return '<h2>Inventory</h2><p>Items collected from mining, drinking, eating, and crafting...</p>';
-                case 'mission':
-                    return `<h1>Odyssey Quest - Mission Control</h1>
-                        <button class="button" onclick="sendCommand('!join')">Join Mission</button>
-                        <button class="button" onclick="sendCommand('!depart')">Depart on Mission</button>
-                        <button class="button" onclick="sendCommand('!land')">Land on Planet</button>
-                        <button class="button" onclick="sendCommand('!changecourse')">Change Course</button>
-                        <button class="button" onclick="sendCommand('!explore')">Explore</button>
-                        <button class="button" onclick="sendCommand('!mine')">Mine Resources</button>
-                        <button class="button" onclick="sendCommand('!scan')">Scan Environment</button>
-                        <button class="button" onclick="sendCommand('!return')">Return to Mothership</button>`;
-                case 'ship':
-                    return '<h2>Ship Status</h2><p>Displaying ship damage, fuel levels, and necessary repairs...</p>';
-                default:
-                    return '<h2>Welcome to Odyssey Quest</h2><p>Select a menu option above.</p>';
-            }
-        }
-
         function sendCommand(command) {
             if (socket && socket.readyState === WebSocket.OPEN && playerUsername !== "Unknown Player") {
                 let botResponse = `${playerUsername} `;
@@ -209,6 +155,11 @@
                 console.error("❌ Error: Not connected to Twitch Chat");
             }
         }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            getTwitchUsername();
+            connectToTwitch();
+        });
     </script>
 </body>
 </html>
