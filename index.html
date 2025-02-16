@@ -68,14 +68,7 @@
     
     <div id="content" class="container">
         <h1>Odyssey Quest - Mission Control</h1>
-        <button class="button" onclick="sendCommand('!join')">Join Mission</button>
-        <button class="button" onclick="sendCommand('!depart')">Depart on Mission</button>
-        <button class="button" onclick="sendCommand('!land')">Land on Planet</button>
-        <button class="button" onclick="sendCommand('!changecourse')">Change Course</button>
-        <button class="button" onclick="sendCommand('!explore')">Explore</button>
-        <button class="button" onclick="sendCommand('!mine')">Mine Resources</button>
-        <button class="button" onclick="sendCommand('!scan')">Scan Environment</button>
-        <button class="button" onclick="sendCommand('!return')">Return to Mothership</button>
+        <p id="status">Initializing...</p>
     </div>
     
     <script>
@@ -84,75 +77,40 @@
         let socket;
         
         Twitch.ext.onAuthorized(function(auth) {
-            playerUsername = auth.userId ? auth.userId : "Unknown Player";
-            console.log("✅ Twitch User ID Captured:", playerUsername);
+            console.log("✅ Twitch Extension Authorized:", auth);
+            playerUsername = auth.userId ? `User-${auth.userId}` : "Unknown Player";
+            document.getElementById("status").innerText = `Welcome, ${playerUsername}!`;
         });
-
-        function connectToTwitch() {
-            socket = new WebSocket("wss://irc-ws.chat.twitch.tv");
-            
-            socket.onopen = function () {
-                console.log("✅ Connected to Twitch Chat");
-                socket.send(`PASS oauth:0fy6vjfalfh3c1h4l5rp6n4ak19xvg`);
-                socket.send(`NICK odysseyquest`);
-                socket.send(`JOIN ${CHANNEL_NAME}`);
-                socket.send("CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership");
-            };
-            
-            socket.onerror = function (error) {
-                console.error("❌ WebSocket Error: ", error);
-            };
-            
-            socket.onclose = function (event) {
-                console.warn(`⚠️ Disconnected from Twitch Chat (Code: ${event.code}). Reconnecting in 5 seconds...`);
-                setTimeout(connectToTwitch, 5000);
-            };
-        }
         
-        function sendCommand(command) {
-            if (socket && socket.readyState === WebSocket.OPEN && playerUsername !== "Unknown Player") {
-                let botResponse = `${playerUsername} `;
-                switch (command) {
-                    case "!join":
-                        botResponse += "has joined the mission! Welcome aboard, traveler!";
-                        break;
-                    case "!depart":
-                        botResponse += "is departing on a mission! Destination: Unknown. Buckle up!";
-                        break;
-                    case "!land":
-                        botResponse += "is attempting to land... will they touch down safely or face the dangers of the unknown?";
-                        break;
-                    case "!changecourse":
-                        botResponse += "is navigating to a new location... course adjustment underway!";
-                        break;
-                    case "!explore":
-                        botResponse += "is scanning the surroundings... what secrets will be uncovered?";
-                        break;
-                    case "!mine":
-                        botResponse += "is mining for valuable resources... stand by!";
-                        break;
-                    case "!scan":
-                        botResponse += "is scanning the environment... processing planetary data!";
-                        break;
-                    case "!return":
-                        botResponse += "is returning to the mothership... docking sequence initiated.";
-                        break;
-                    default:
-                        botResponse = "";
-                }
+        function connectToTwitch() {
+            try {
+                socket = new WebSocket("wss://irc-ws.chat.twitch.tv");
                 
-                if (botResponse) {
-                    setTimeout(() => {
-                        socket.send(`PRIVMSG ${CHANNEL_NAME} :${botResponse}`);
-                        console.log("🤖 Bot Response: " + botResponse);
-                    }, 1000);
-                }
-            } else {
-                console.error("❌ Error: Not connected to Twitch Chat");
+                socket.onopen = function () {
+                    console.log("✅ Connected to Twitch Chat");
+                    socket.send(`PASS oauth:0fy6vjfalfh3c1h4l5rp6n4ak19xvg`);
+                    socket.send(`NICK odysseyquest`);
+                    socket.send(`JOIN ${CHANNEL_NAME}`);
+                    socket.send("CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership");
+                };
+                
+                socket.onerror = function (error) {
+                    console.error("❌ WebSocket Error: ", error);
+                    document.getElementById("status").innerText = "Error connecting to chat.";
+                };
+                
+                socket.onclose = function (event) {
+                    console.warn(`⚠️ Disconnected from Twitch Chat (Code: ${event.code}). Reconnecting in 5 seconds...`);
+                    setTimeout(connectToTwitch, 5000);
+                };
+            } catch (error) {
+                console.error("❌ Connection Error: ", error);
+                document.getElementById("status").innerText = "Error initializing chat.";
             }
         }
         
         document.addEventListener('DOMContentLoaded', () => {
+            console.log("📌 DOM Loaded, Initializing Panel...");
             connectToTwitch();
         });
     </script>
