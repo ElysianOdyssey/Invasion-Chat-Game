@@ -1,59 +1,49 @@
-<script>
-    let players = {};
-
-    function updateOverlay() {
-        const overlay = document.getElementById("overlay");
-        overlay.innerHTML = "";
-
-        for (const [name, data] of Object.entries(players)) {
-            let playerDiv = document.createElement("div");
-            playerDiv.classList.add("player");
-
-            let nameTag = document.createElement("span");
-            nameTag.innerText = name;
-
-            let healthBar = document.createElement("div");
-            healthBar.classList.add("health-bar");
-
-            let healthFill = document.createElement("div");
-            healthFill.classList.add("health-fill");
-            healthFill.style.width = data.health + "%";
-
-            healthBar.appendChild(healthFill);
-            playerDiv.appendChild(nameTag);
-            playerDiv.appendChild(healthBar);
-            overlay.appendChild(playerDiv);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitch Panel - Mission Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            text-align: center;
+            padding: 20px;
         }
-    }
-
-    // 🛠️ Make handleChatCommand globally accessible
-    window.handleChatCommand = function (command) {
-        let parts = command.split(" ");
-        let cmd = parts[0].toLowerCase();
-        let username = parts[1] || "Player";
-
-        if (cmd === "!join") {
-            if (!players[username]) {
-                players[username] = { health: 100 };
-                updateOverlay();
-            }
-        } 
-        else if (cmd === "!damage") {
-            if (players[username]) {
-                players[username].health = Math.max(0, players[username].health - 10);
-                updateOverlay();
-            }
-        } 
-        else if (cmd === "!heal") {
-            if (players[username]) {
-                players[username].health = Math.min(100, players[username].health + 10);
-                updateOverlay();
-            }
+        .button {
+            display: block;
+            width: 200px;
+            margin: 10px auto;
+            padding: 10px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
         }
-    };
-
-    // Simulating chat input for testing (remove later)
-    setTimeout(() => { handleChatCommand("!join Ashley"); }, 1000);
-    setTimeout(() => { handleChatCommand("!damage Ashley"); }, 3000);
-    setTimeout(() => { handleChatCommand("!heal Ashley"); }, 5000);
-</script>
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mission Control Panel</h1>
+    <button class="button" onclick="sendCommand('!join')">Join Mission</button>
+    <button class="button" onclick="sendCommand('!depart')">Depart on Mission</button>
+    <button class="button" onclick="sendCommand('!land')">Land on Planet</button>
+    <button class="button" onclick="sendCommand('!changecourse')">Change Course</button>
+    <button class="button" onclick="sendCommand('!explore')">Explore</button>
+    <button class="button" onclick="sendCommand('!mine')">Mine Resources</button>
+    <button class="button" onclick="sendCommand('!scan')">Scan Environment</button>
+    <button class="button" onclick="sendCommand('!return')">Return to Mothership</button>
+    
+    <script>
+        function sendCommand(command) {
+            console.log("Command sent: " + command);
+            // This will later be linked to Twitch chat API
+        }
+    </script>
+</body>
+</html>
