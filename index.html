@@ -76,12 +76,26 @@
         const CHANNEL_NAME = "#elysian_odyssey";
         let playerUsername = "Unknown Player";
         let socket;
+        let twitchLoaded = false;
+
+        Twitch.ext.onContext((context) => {
+            console.log("✅ Twitch Extension Context Loaded:", context);
+            twitchLoaded = true;
+        });
+
+        Twitch.ext.onAuthorized((auth) => {
+            console.log("✅ Twitch Extension Authorized:", auth);
+            playerUsername = auth.userId ? `User-${auth.userId}` : "Unknown Player";
+            document.getElementById("status").textContent = `Welcome, ${playerUsername}!`;
+        });
 
         function showPage(page) {
+            if (!twitchLoaded) {
+                console.warn("⚠️ Twitch Extension not fully loaded yet.");
+                return;
+            }
             let content = document.getElementById("content");
-            console.log("🔹 Switching to Page:", page);
             if (!content) return;
-
             content.innerHTML = "";
             let title = document.createElement("h2");
             let desc = document.createElement("p");
@@ -119,43 +133,15 @@
             content.appendChild(desc);
         }
 
-        Twitch.ext.onAuthorized(function(auth) {
-            console.log("✅ Twitch Extension Authorized:", auth);
-            playerUsername = auth.userId ? `User-${auth.userId}` : "Unknown Player";
-            document.getElementById("status").innerText = `Welcome, ${playerUsername}!`;
-        });
-        
-        function connectToTwitch() {
-            try {
-                socket = new WebSocket("wss://irc-ws.chat.twitch.tv");
-                
-                socket.onopen = function () {
-                    console.log("✅ Connected to Twitch Chat");
-                    socket.send(`PASS oauth:0fy6vjfalfh3c1h4l5rp6n4ak19xvg`);
-                    socket.send(`NICK odysseyquest`);
-                    socket.send(`JOIN ${CHANNEL_NAME}`);
-                    socket.send("CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership");
-                };
-                
-                socket.onerror = function (error) {
-                    console.error("❌ WebSocket Error: ", error);
-                    document.getElementById("status").innerText = "Error connecting to chat.";
-                };
-                
-                socket.onclose = function (event) {
-                    console.warn(`⚠️ Disconnected from Twitch Chat (Code: ${event.code}). Reconnecting in 5 seconds...`);
-                    setTimeout(connectToTwitch, 5000);
-                };
-            } catch (error) {
-                console.error("❌ Connection Error: ", error);
-                document.getElementById("status").innerText = "Error initializing chat.";
-            }
-        }
-        
         document.addEventListener('DOMContentLoaded', () => {
             console.log("📌 DOM Loaded, Initializing Panel...");
-            showPage("mission");
-            connectToTwitch();
+            setTimeout(() => {
+                if (twitchLoaded) {
+                    showPage("mission");
+                } else {
+                    console.warn("⚠️ Twitch Extension still not fully loaded after timeout.");
+                }
+            }, 2000);
         });
     </script>
 </body>
