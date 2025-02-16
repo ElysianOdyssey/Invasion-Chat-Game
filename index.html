@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Odyssey Quest - Mission Control</title>
     <script>
-        // Check if running inside Twitch
-        let isTwitch = typeof Twitch !== "undefined" && Twitch.ext;
+        let isTwitch = false;
+        if (typeof Twitch !== "undefined" && Twitch.ext) {
+            isTwitch = true;
+        }
     </script>
-    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js" defer></script>
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js" defer onerror="twitchError()"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -80,22 +82,25 @@
         const CHANNEL_NAME = "#elysian_odyssey";
         let playerUsername = "Unknown Player";
         let twitchLoaded = false;
-        
+
+        function twitchError() {
+            console.error("❌ Failed to load Twitch API. Running in browser mode.");
+            document.getElementById("status").textContent = "Twitch API Unavailable";
+        }
+
         function initialize() {
             console.log("📌 Initializing...");
-            if (isTwitch) {
+            if (isTwitch && typeof Twitch.ext !== "undefined") {
                 console.log("✅ Running inside Twitch.");
                 Twitch.ext.onAuthorized((auth) => {
                     console.log("✅ Twitch Extension Authorized:", auth);
                     playerUsername = auth.userId ? `User-${auth.userId}` : "Unknown Player";
                     document.getElementById("status").textContent = `Welcome, ${playerUsername}!`;
                     twitchLoaded = true;
+                    showPage("mission");
                 });
                 Twitch.ext.onContext((context) => {
                     console.log("✅ Twitch Extension Context Loaded:", context);
-                    if (twitchLoaded) {
-                        requestAnimationFrame(() => showPage("mission"));
-                    }
                 });
             } else {
                 console.log("🌍 Running in a normal browser.");
