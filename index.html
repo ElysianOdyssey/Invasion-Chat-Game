@@ -29,6 +29,13 @@
     </style>
 </head>
 <body>
+    <nav>
+        <button class="nav-button" onclick="showPage('log')">Navigation Log</button>
+        <button class="nav-button" onclick="showPage('inventory')">Inventory</button>
+        <button class="nav-button" onclick="showPage('mission')">Mission Control</button>
+        <button class="nav-button" onclick="showPage('ship')">Ship</button>
+    </nav>
+    <div id="content">
     <h1>Odyssey Quest - Mission Control</h1>
     <button class="button" onclick="sendCommand('!join')">Join Mission</button>
     <button class="button" onclick="sendCommand('!depart')">Depart on Mission</button>
@@ -83,30 +90,31 @@
         function sendCommand(command) {
             if (socket.readyState === WebSocket.OPEN) {
                 let botResponse = "";
+                const username = BOT_USERNAME.charAt(0).toUpperCase() + BOT_USERNAME.slice(1); // Format bot username
                 switch (command) {
                     case "!join":
-                        botResponse = "🚀 Welcome aboard, traveler! Your journey in Odyssey Quest begins now!";
+                        botResponse = `🚀 ${username} has joined the mission! Welcome aboard, traveler! Your journey in Odyssey Quest begins now!`;
                         break;
                     case "!depart":
-                        botResponse = "🛸 Departing on a mission! Destination: Unknown. Buckle up!";
+                        botResponse = `🛸 ${username} is departing on a mission! Destination: Unknown. Buckle up!`;
                         break;
                     case "!land":
-                        botResponse = "🌍 Attempting to land... will you touch down safely or face the dangers of the unknown?";
+                        botResponse = `🌍 ${username} is attempting to land... will they touch down safely or face the dangers of the unknown?`;
                         break;
                     case "!changecourse":
-                        botResponse = "🌀 Navigating to a new location... course adjustment underway!";
+                        botResponse = `🌀 ${username} is navigating to a new location... course adjustment underway!`;
                         break;
                     case "!explore":
-                        botResponse = "🔍 Scanning the surroundings... what secrets will be uncovered?";
+                        botResponse = `🔍 ${username} is scanning the surroundings... what secrets will be uncovered?`;
                         break;
                     case "!mine":
-                        botResponse = "⛏️ Mining for valuable resources... stand by!";
+                        botResponse = `⛏️ ${username} is mining for valuable resources... stand by!`;
                         break;
                     case "!scan":
-                        botResponse = "📡 Scanning environment... processing planetary data!";
+                        botResponse = `📡 ${username} is scanning the environment... processing planetary data!`;
                         break;
                     case "!return":
-                        botResponse = "🛬 Returning to the mothership... docking sequence initiated.";
+                        botResponse = `🛬 ${username} is returning to the mothership... docking sequence initiated.`;
                         break;
                     default:
                         botResponse = "";
@@ -125,6 +133,35 @@
         }
         
         connectToTwitch();
+    </script>
+    </div>
+    <script>
+        function showPage(page) {
+            document.getElementById('content').innerHTML = getPageContent(page);
+        }
+
+        function getPageContent(page) {
+            switch (page) {
+                case 'log':
+                    return '<h2>Navigation Log</h2><p>Tracking all missions and outcomes...</p>';
+                case 'inventory':
+                    return '<h2>Inventory</h2><p>Items collected from mining, drinking, eating, and crafting...</p>';
+                case 'mission':
+                    return `<h1>Odyssey Quest - Mission Control</h1>
+                        <button class="button" onclick="sendCommand('!join')">Join Mission</button>
+                        <button class="button" onclick="sendCommand('!depart')">Depart on Mission</button>
+                        <button class="button" onclick="sendCommand('!land')">Land on Planet</button>
+                        <button class="button" onclick="sendCommand('!changecourse')">Change Course</button>
+                        <button class="button" onclick="sendCommand('!explore')">Explore</button>
+                        <button class="button" onclick="sendCommand('!mine')">Mine Resources</button>
+                        <button class="button" onclick="sendCommand('!scan')">Scan Environment</button>
+                        <button class="button" onclick="sendCommand('!return')">Return to Mothership</button>`;
+                case 'ship':
+                    return '<h2>Ship Status</h2><p>Displaying ship damage, fuel levels, and necessary repairs...</p>';
+                default:
+                    return '<h2>Welcome to Odyssey Quest</h2><p>Select a menu option above.</p>';
+            }
+        }
     </script>
 </body>
 </html>
