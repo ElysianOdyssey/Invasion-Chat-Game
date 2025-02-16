@@ -76,13 +76,13 @@
         const CHANNEL_NAME = "#elysian_odyssey";
         let playerUsername = "Unknown Player";
         let twitchLoaded = false;
-        
+
         Twitch.ext.onAuthorized((auth) => {
             console.log("✅ Twitch Extension Authorized:", auth);
             playerUsername = auth.userId ? `User-${auth.userId}` : "Unknown Player";
             document.getElementById("status").textContent = `Welcome, ${playerUsername}!`;
             twitchLoaded = true;
-            showPage("mission");
+            requestAnimationFrame(() => showPage("mission"));
         });
         
         function showPage(page) {
