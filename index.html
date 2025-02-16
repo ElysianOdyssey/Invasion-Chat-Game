@@ -44,35 +44,51 @@
         const BOT_USERNAME = "elysian_odyssey";  // Twitch username
         const CHANNEL_NAME = "#elysian_odyssey";  // Twitch channel name
         
-        const socket = new WebSocket("wss://irc-ws.chat.twitch.tv");
-        
-        socket.onopen = function () {
-            console.log("Connected to Twitch Chat");
-            socket.send(`PASS ${OAUTH_TOKEN}`);
-            socket.send(`NICK ${BOT_USERNAME}`);
-            socket.send(`JOIN ${CHANNEL_NAME}`);
+        let reconnectAttempts = 0;
+        function connectToTwitch() {
+            const socket = new WebSocket("wss://irc-ws.chat.twitch.tv");
             
-            // Request necessary chat capabilities
-            socket.send("CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership");
-        };
-        
-        socket.onerror = function (error) {
-            console.log("WebSocket Error: ", error);
-        };
-        
-        socket.onmessage = function (event) {
-            console.log("Message from Twitch Chat: ", event.data);
-        };
-        
-        function sendCommand(command) {
-            if (socket.readyState === WebSocket.OPEN) {
-                const message = `PRIVMSG ${CHANNEL_NAME} :${command}`;
-                socket.send(message);
-                console.log("Command sent to chat: " + command);
-            } else {
-                console.log("Error: Not connected to Twitch Chat");
-            }
+            socket.onopen = function () {
+                console.log("✅ Connected to Twitch Chat");
+                socket.send(`PASS ${OAUTH_TOKEN}`);
+                socket.send(`NICK ${BOT_USERNAME}`);
+                socket.send(`JOIN ${CHANNEL_NAME}`);
+                
+                // Request necessary chat capabilities
+                socket.send("CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership");
+                reconnectAttempts = 0; // Reset reconnect attempts
+            };
+            
+            socket.onerror = function (error) {
+                console.error("❌ WebSocket Error: ", error);
+            };
+            
+            socket.onclose = function (event) {
+                console.warn(`⚠️ Disconnected from Twitch Chat (Code: ${event.code}). Reconnecting in 5 seconds...`);
+                if (reconnectAttempts < 5) {
+                    setTimeout(connectToTwitch, 5000);
+                    reconnectAttempts++;
+                } else {
+                    console.error("❌ Maximum reconnect attempts reached.");
+                }
+            };
+            
+            socket.onmessage = function (event) {
+                console.log("📨 Message from Twitch Chat: ", event.data);
+            };
+            
+            window.sendCommand = function(command) {
+                if (socket.readyState === WebSocket.OPEN) {
+                    const message = `PRIVMSG ${CHANNEL_NAME} :${command}`;
+                    socket.send(message);
+                    console.log("📢 Command sent to chat: " + command);
+                } else {
+                    console.error("❌ Error: Not connected to Twitch Chat");
+                }
+            };
         }
+        
+        connectToTwitch();
     </script>
 </body>
 </html>
