@@ -79,7 +79,20 @@
     
     <script>
         const CHANNEL_NAME = "#elysian_odyssey";
-        let playerUsername = "Unknown Player"; // Default in case we can't fetch username
+        let playerUsername = "Unknown Player"; // Default until we fetch the username
+        function getTwitchUsername() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has("username")) {
+                playerUsername = params.get("username");
+                console.log("✅ Twitch Username Captured:", playerUsername);
+            } else {
+                console.warn("⚠️ No username parameter found in URL.");
+            }
+        } // Default until we fetch the username
+        function getTwitchUsername() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has("username")) {
+                playerUsername // Default in case we can't fetch username
         let socket;
 
         function connectToTwitch() {
@@ -97,16 +110,16 @@
                 console.error("❌ WebSocket Error: ", error);
             };
             
-            socket.onclose = function (event) {
-                console.warn(`⚠️ Disconnected from Twitch Chat (Code: ${event.code}). Reconnecting in 5 seconds...`);
+            socket.onclose = functiodocument.addEventListener('DOMContentLoaded', () => {
+            getTwitchUsername();
+        });        console.warn(`⚠️ Disconnected from Twitch Chat (Code: ${event.code}). Reconnecting in 5 seconds...`);
                 setTimeout(connectToTwitch, 5000);
             };
         }
         
         getTwitchUsername();
         connectToTwitch();
-        let playerUsername = "Unknown Player"; // Default in case we can't fetch username
-        
+        let playerUsername = "Unknown Player"; // Default in case we can't fet
         function getTwitchUsername() {
             fetch('https://id.twitch.tv/oauth2/validate', {
                 headers: { 'Authorization': 'Bearer 0fy6vjfalfh3c1h4l5rp6n4ak19xvg' }
