@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Odyssey Quest - Mission Control</title>
-    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+    <script>
+        // Check if running inside Twitch
+        let isTwitch = typeof Twitch !== "undefined" && Twitch.ext;
+    </script>
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js" defer></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -69,35 +73,35 @@
     
     <div id="content" class="container">
         <h1>Odyssey Quest - Mission Control</h1>
-        <p id="status">Initializing Twitch Extension...</p>
+        <p id="status">Initializing...</p>
     </div>
     
     <script>
         const CHANNEL_NAME = "#elysian_odyssey";
         let playerUsername = "Unknown Player";
         let twitchLoaded = false;
-
-        function initializeTwitchExtension() {
-            if (typeof Twitch.ext === "undefined") {
-                console.error("❌ Twitch Extension API not available. Retrying in 3 seconds...");
-                setTimeout(initializeTwitchExtension, 3000);
-                return;
+        
+        function initialize() {
+            console.log("📌 Initializing...");
+            if (isTwitch) {
+                console.log("✅ Running inside Twitch.");
+                Twitch.ext.onAuthorized((auth) => {
+                    console.log("✅ Twitch Extension Authorized:", auth);
+                    playerUsername = auth.userId ? `User-${auth.userId}` : "Unknown Player";
+                    document.getElementById("status").textContent = `Welcome, ${playerUsername}!`;
+                    twitchLoaded = true;
+                });
+                Twitch.ext.onContext((context) => {
+                    console.log("✅ Twitch Extension Context Loaded:", context);
+                    if (twitchLoaded) {
+                        requestAnimationFrame(() => showPage("mission"));
+                    }
+                });
+            } else {
+                console.log("🌍 Running in a normal browser.");
+                document.getElementById("status").textContent = "Welcome, Explorer!";
+                showPage("mission");
             }
-            console.log("✅ Twitch Extension API detected.");
-
-            Twitch.ext.onAuthorized((auth) => {
-                console.log("✅ Twitch Extension Authorized:", auth);
-                playerUsername = auth.userId ? `User-${auth.userId}` : "Unknown Player";
-                document.getElementById("status").textContent = `Welcome, ${playerUsername}!`;
-                twitchLoaded = true;
-            });
-            
-            Twitch.ext.onContext((context) => {
-                console.log("✅ Twitch Extension Context Loaded:", context);
-                if (twitchLoaded) {
-                    requestAnimationFrame(() => showPage("mission"));
-                }
-            });
         }
 
         function showPage(page) {
@@ -140,10 +144,7 @@
             content.appendChild(desc);
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log("📌 DOM Loaded, Initializing Twitch Extension...");
-            initializeTwitchExtension();
-        });
+        document.addEventListener('DOMContentLoaded', initialize);
     </script>
 </body>
 </html>
