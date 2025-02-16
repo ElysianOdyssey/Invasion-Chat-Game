@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Odyssey Quest - Mission Control</title>
     <style>
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+            padding: 10px;
+        }
+        .nav-button {
+            background-color: #555;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .nav-button:hover {
+            background-color: #777;
+        }
         body {
             font-family: Arial, sans-serif;
             background-color: #121212;
@@ -137,6 +155,10 @@
     </div>
     <script>
         function showPage(page) {
+            if (socket.readyState !== WebSocket.OPEN) {
+                console.warn('WebSocket is not open. Attempting to reconnect...');
+                connectToTwitch();
+            }
             document.getElementById('content').innerHTML = getPageContent(page);
         }
 
