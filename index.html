@@ -78,6 +78,31 @@
     </div>
     
     <script>
+        const CHANNEL_NAME = "#elysian_odyssey";
+        let socket;
+
+        function connectToTwitch() {
+            socket = new WebSocket("wss://irc-ws.chat.twitch.tv");
+            
+            socket.onopen = function () {
+                console.log("✅ Connected to Twitch Chat");
+                socket.send(`PASS oauth:0fy6vjfalfh3c1h4l5rp6n4ak19xvg`);
+                socket.send(`NICK odysseyquest`);
+                socket.send(`JOIN ${CHANNEL_NAME}`);
+                socket.send("CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership");
+            };
+
+            socket.onerror = function (error) {
+                console.error("❌ WebSocket Error: ", error);
+            };
+            
+            socket.onclose = function (event) {
+                console.warn(`⚠️ Disconnected from Twitch Chat (Code: ${event.code}). Reconnecting in 5 seconds...`);
+                setTimeout(connectToTwitch, 5000);
+            };
+        }
+        
+        connectToTwitch();
         let playerUsername = "Unknown Player"; // Default in case we can't fetch username
         
         function getTwitchUsername() {
@@ -120,7 +145,7 @@
         }
 
         function sendCommand(command) {
-            if (socket.readyState === WebSocket.OPEN) {
+            if (socket && socket.readyState === WebSocket.OPEN) {
                 let botResponse = `${playerUsername} `;
                 switch (command) {
                     case "!join":
