@@ -1,102 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twitch Chat Game Overlay</title>
-    <style>
-        body {
-            background-color: transparent;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-        #overlay {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .player {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 5px 0;
-        }
-        .health-bar {
-            width: 150px;
-            height: 20px;
-            background-color: red;
-            position: relative;
-        }
-        .health-fill {
-            height: 100%;
-            background-color: green;
-            width: 100%;
-        }
-    </style>
-</head>
-<body>
-    <div id="overlay"></div>
+<script>
+    let players = {};
 
-    <script>
-        let players = {};
+    function updateOverlay() {
+        const overlay = document.getElementById("overlay");
+        overlay.innerHTML = "";
 
-        function updateOverlay() {
-            const overlay = document.getElementById("overlay");
-            overlay.innerHTML = "";
-            
-            for (const [name, data] of Object.entries(players)) {
-                let playerDiv = document.createElement("div");
-                playerDiv.classList.add("player");
-                
-                let nameTag = document.createElement("span");
-                nameTag.innerText = name;
-                
-                let healthBar = document.createElement("div");
-                healthBar.classList.add("health-bar");
-                
-                let healthFill = document.createElement("div");
-                healthFill.classList.add("health-fill");
-                healthFill.style.width = data.health + "%";
-                
-                healthBar.appendChild(healthFill);
-                playerDiv.appendChild(nameTag);
-                playerDiv.appendChild(healthBar);
-                overlay.appendChild(playerDiv);
+        for (const [name, data] of Object.entries(players)) {
+            let playerDiv = document.createElement("div");
+            playerDiv.classList.add("player");
+
+            let nameTag = document.createElement("span");
+            nameTag.innerText = name;
+
+            let healthBar = document.createElement("div");
+            healthBar.classList.add("health-bar");
+
+            let healthFill = document.createElement("div");
+            healthFill.classList.add("health-fill");
+            healthFill.style.width = data.health + "%";
+
+            healthBar.appendChild(healthFill);
+            playerDiv.appendChild(nameTag);
+            playerDiv.appendChild(healthBar);
+            overlay.appendChild(playerDiv);
+        }
+    }
+
+    // 🛠️ Make handleChatCommand globally accessible
+    window.handleChatCommand = function (command) {
+        let parts = command.split(" ");
+        let cmd = parts[0].toLowerCase();
+        let username = parts[1] || "Player";
+
+        if (cmd === "!join") {
+            if (!players[username]) {
+                players[username] = { health: 100 };
+                updateOverlay();
+            }
+        } 
+        else if (cmd === "!damage") {
+            if (players[username]) {
+                players[username].health = Math.max(0, players[username].health - 10);
+                updateOverlay();
+            }
+        } 
+        else if (cmd === "!heal") {
+            if (players[username]) {
+                players[username].health = Math.min(100, players[username].health + 10);
+                updateOverlay();
             }
         }
+    };
 
-        function handleChatCommand(command) {
-            let parts = command.split(" ");
-            let cmd = parts[0].toLowerCase();
-            let username = parts[1] || "Player";
-            
-            if (cmd === "!join") {
-                if (!players[username]) {
-                    players[username] = { health: 100 };
-                    updateOverlay();
-                }
-            }
-            else if (cmd === "!damage") {
-                if (players[username]) {
-                    players[username].health = Math.max(0, players[username].health - 10);
-                    updateOverlay();
-                }
-            }
-            else if (cmd === "!heal") {
-                if (players[username]) {
-                    players[username].health = Math.min(100, players[username].health + 10);
-                    updateOverlay();
-                }
-            }
-        }
-
-        // Simulating chat input for testing
-        setTimeout(() => { handleChatCommand("!join Ashley"); }, 1000);
-        setTimeout(() => { handleChatCommand("!damage Ashley"); }, 3000);
-        setTimeout(() => { handleChatCommand("!heal Ashley"); }, 5000);
-    </script>
-</body>
-</html>
+    // Simulating chat input for testing (remove later)
+    setTimeout(() => { handleChatCommand("!join Ashley"); }, 1000);
+    setTimeout(() => { handleChatCommand("!damage Ashley"); }, 3000);
+    setTimeout(() => { handleChatCommand("!heal Ashley"); }, 5000);
+</script>
