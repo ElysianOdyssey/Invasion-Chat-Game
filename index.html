@@ -68,13 +68,41 @@
     
     <div id="content" class="container">
         <h1>Odyssey Quest - Mission Control</h1>
-        <p id="status">Initializing...</p>
+        <p id="status">Initializing Twitch Extension...</p>
     </div>
     
     <script>
         const CHANNEL_NAME = "#elysian_odyssey";
         let playerUsername = "Unknown Player";
         let socket;
+
+        function showPage(page) {
+            let content = document.getElementById("content");
+            switch (page) {
+                case "log":
+                    content.innerHTML = "<h2>Navigation Log</h2><p>Tracking missions and outcomes...</p>";
+                    break;
+                case "inventory":
+                    content.innerHTML = "<h2>Inventory</h2><p>Displaying collected items...</p>";
+                    break;
+                case "mission":
+                    content.innerHTML = `<h1>Odyssey Quest - Mission Control</h1>
+                        <button class='button' onclick='sendCommand("!join")'>Join Mission</button>
+                        <button class='button' onclick='sendCommand("!depart")'>Depart on Mission</button>
+                        <button class='button' onclick='sendCommand("!land")'>Land on Planet</button>
+                        <button class='button' onclick='sendCommand("!changecourse")'>Change Course</button>
+                        <button class='button' onclick='sendCommand("!explore")'>Explore</button>
+                        <button class='button' onclick='sendCommand("!mine")'>Mine Resources</button>
+                        <button class='button' onclick='sendCommand("!scan")'>Scan Environment</button>
+                        <button class='button' onclick='sendCommand("!return")'>Return to Mothership</button>`;
+                    break;
+                case "ship":
+                    content.innerHTML = "<h2>Ship Status</h2><p>Displaying ship damage, fuel levels, and repairs...</p>";
+                    break;
+                default:
+                    content.innerHTML = "<h2>Welcome to Odyssey Quest</h2><p>Select a menu option above.</p>";
+            }
+        }
         
         Twitch.ext.onAuthorized(function(auth) {
             console.log("✅ Twitch Extension Authorized:", auth);
@@ -111,6 +139,7 @@
         
         document.addEventListener('DOMContentLoaded', () => {
             console.log("📌 DOM Loaded, Initializing Panel...");
+            showPage("mission");
             connectToTwitch();
         });
     </script>
