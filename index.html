@@ -78,8 +78,53 @@
             };
             
             window.sendCommand = function(command) {
-                if (socket.readyState === WebSocket.OPEN) {
-                    const message = `PRIVMSG ${CHANNEL_NAME} :${command}`;
+    if (socket.readyState === WebSocket.OPEN) {
+        const message = `PRIVMSG ${CHANNEL_NAME} :${command}`;
+        socket.send(message);
+        console.log("📢 Command sent to chat: " + command);
+        
+        // Custom bot responses
+        let botResponse = "";
+        switch (command) {
+            case "!join":
+                botResponse = "🚀 Welcome aboard, traveler! Your journey in Odyssey Quest begins now!";
+                break;
+            case "!depart":
+                botResponse = "🛸 Departing on a mission! Destination: Unknown. Buckle up!";
+                break;
+            case "!land":
+                botResponse = "🌍 Attempting to land... will you touch down safely or face the dangers of the unknown?";
+                break;
+            case "!changecourse":
+                botResponse = "🌀 Navigating to a new location... course adjustment underway!";
+                break;
+            case "!explore":
+                botResponse = "🔍 Scanning the surroundings... what secrets will be uncovered?";
+                break;
+            case "!mine":
+                botResponse = "⛏️ Mining for valuable resources... stand by!";
+                break;
+            case "!scan":
+                botResponse = "📡 Scanning environment... processing planetary data!";
+                break;
+            case "!return":
+                botResponse = "🛬 Returning to the mothership... docking sequence initiated.";
+                break;
+            default:
+                botResponse = "";
+        }
+
+        if (botResponse) {
+            setTimeout(() => {
+                const botMessage = `PRIVMSG ${CHANNEL_NAME} :${botResponse}`;
+                socket.send(botMessage);
+                console.log("🤖 Bot Response: " + botResponse);
+            }, 1000); // Small delay before bot replies
+        }
+    } else {
+        console.error("❌ Error: Not connected to Twitch Chat");
+    }
+}; :${command}`;
                     socket.send(message);
                     console.log("📢 Command sent to chat: " + command);
                 } else {
