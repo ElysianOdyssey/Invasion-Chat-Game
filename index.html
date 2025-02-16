@@ -78,6 +78,16 @@
     </div>
     
     <script>
+        let playerUsername = "Unknown Player"; // Default in case we can't fetch username
+        
+        function getTwitchUsername() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has("username")) {
+                playerUsername = params.get("username");
+            }
+        }
+        getTwitchUsername();
+        
         function showPage(page) {
             if (socket.readyState !== WebSocket.OPEN) {
                 console.warn('WebSocket is not open. Attempting to reconnect...');
@@ -106,6 +116,49 @@
                     return '<h2>Ship Status</h2><p>Displaying ship damage, fuel levels, and necessary repairs...</p>';
                 default:
                     return '<h2>Welcome to Odyssey Quest</h2><p>Select a menu option above.</p>';
+            }
+        }
+
+        function sendCommand(command) {
+            if (socket.readyState === WebSocket.OPEN) {
+                let botResponse = `${playerUsername} `;
+                switch (command) {
+                    case "!join":
+                        botResponse += "has joined the mission! Welcome aboard, traveler!";
+                        break;
+                    case "!depart":
+                        botResponse += "is departing on a mission! Destination: Unknown. Buckle up!";
+                        break;
+                    case "!land":
+                        botResponse += "is attempting to land... will they touch down safely or face the dangers of the unknown?";
+                        break;
+                    case "!changecourse":
+                        botResponse += "is navigating to a new location... course adjustment underway!";
+                        break;
+                    case "!explore":
+                        botResponse += "is scanning the surroundings... what secrets will be uncovered?";
+                        break;
+                    case "!mine":
+                        botResponse += "is mining for valuable resources... stand by!";
+                        break;
+                    case "!scan":
+                        botResponse += "is scanning the environment... processing planetary data!";
+                        break;
+                    case "!return":
+                        botResponse += "is returning to the mothership... docking sequence initiated.";
+                        break;
+                    default:
+                        botResponse = "";
+                }
+                
+                if (botResponse) {
+                    setTimeout(() => {
+                        socket.send(`PRIVMSG ${CHANNEL_NAME} :${botResponse}`);
+                        console.log("🤖 Bot Response: " + botResponse);
+                    }, 1000);
+                }
+            } else {
+                console.error("❌ Error: Not connected to Twitch Chat");
             }
         }
     </script>
