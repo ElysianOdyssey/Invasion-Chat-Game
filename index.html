@@ -93,6 +93,11 @@
             if (isTwitch && typeof Twitch.ext !== "undefined") {
                 console.log("✅ Running inside Twitch.");
                 Twitch.ext.onAuthorized((auth) => {
+                    if (!auth) {
+                        console.error("❌ Twitch Authorization Failed.");
+                        document.getElementById("status").textContent = "Authorization Error";
+                        return;
+                    }
                     console.log("✅ Twitch Extension Authorized:", auth);
                     playerUsername = auth.userId ? `User-${auth.userId}` : "Unknown Player";
                     document.getElementById("status").textContent = `Welcome, ${playerUsername}!`;
