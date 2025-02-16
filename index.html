@@ -79,6 +79,7 @@
     
     <script>
         const CHANNEL_NAME = "#elysian_odyssey";
+        let playerUsername = "Unknown Player"; // Default in case we can't fetch username
         let socket;
 
         function connectToTwitch() {
@@ -102,14 +103,23 @@
             };
         }
         
+        getTwitchUsername();
         connectToTwitch();
         let playerUsername = "Unknown Player"; // Default in case we can't fetch username
         
         function getTwitchUsername() {
-            const params = new URLSearchParams(window.location.search);
-            if (params.has("username")) {
-                playerUsername = params.get("username");
-            }
+            fetch('https://id.twitch.tv/oauth2/validate', {
+                headers: { 'Authorization': 'Bearer 0fy6vjfalfh3c1h4l5rp6n4ak19xvg' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.login) {
+                    playerUsername = data.login;
+                    console.log("✅ Twitch Username Captured:", playerUsername);
+                }
+            })
+            .catch(error => console.error("❌ Failed to fetch username:", error));
+        }
         }
         getTwitchUsername();
         
@@ -145,7 +155,7 @@
         }
 
         function sendCommand(command) {
-            if (socket && socket.readyState === WebSocket.OPEN) {
+            if (socket && socket.readyState === WebSocket.OPEN && playerUsername !== "Unknown Player") {
                 let botResponse = `${playerUsername} `;
                 switch (command) {
                     case "!join":
