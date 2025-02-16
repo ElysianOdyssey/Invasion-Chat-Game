@@ -75,20 +75,16 @@
     <script>
         const CHANNEL_NAME = "#elysian_odyssey";
         let playerUsername = "Unknown Player";
-        let socket;
         let twitchLoaded = false;
-
-        Twitch.ext.onContext((context) => {
-            console.log("✅ Twitch Extension Context Loaded:", context);
-            twitchLoaded = true;
-        });
-
+        
         Twitch.ext.onAuthorized((auth) => {
             console.log("✅ Twitch Extension Authorized:", auth);
             playerUsername = auth.userId ? `User-${auth.userId}` : "Unknown Player";
             document.getElementById("status").textContent = `Welcome, ${playerUsername}!`;
+            twitchLoaded = true;
+            showPage("mission");
         });
-
+        
         function showPage(page) {
             if (!twitchLoaded) {
                 console.warn("⚠️ Twitch Extension not fully loaded yet.");
@@ -117,7 +113,7 @@
                         let btn = document.createElement("button");
                         btn.textContent = cmd;
                         btn.className = "button";
-                        btn.onclick = () => sendCommand(cmd);
+                        btn.onclick = () => console.log(`Command Sent: ${cmd}`);
                         content.appendChild(btn);
                     });
                     break;
@@ -134,14 +130,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("📌 DOM Loaded, Initializing Panel...");
-            setTimeout(() => {
-                if (twitchLoaded) {
-                    showPage("mission");
-                } else {
-                    console.warn("⚠️ Twitch Extension still not fully loaded after timeout.");
-                }
-            }, 2000);
+            console.log("📌 DOM Loaded, Waiting for Twitch Authorization...");
         });
     </script>
 </body>
