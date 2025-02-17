@@ -1,0 +1,10 @@
+{
+  "name": "Odyssey Quest Panel",
+  "version": "1.0",
+  "description": "A Twitch panel for Odyssey Quest, allowing players to manage their missions.",
+  "permissions": [
+    "twitch.ext",
+    "identity",
+    "chat"
+  ]
+}
