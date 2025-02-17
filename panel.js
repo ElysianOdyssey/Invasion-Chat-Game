@@ -1,18 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
     console.log("📌 Odyssey Quest Panel Loaded");
+    showPage("mission"); // Default page
+});
 
+function showPage(page) {
     let content = document.getElementById("content");
     if (!content) {
         console.error("❌ Content container not found.");
         return;
     }
-
-    showPage("mission");
-});
-
-function showPage(page) {
-    let content = document.getElementById("content");
-    if (!content) return;
 
     content.innerHTML = "";
     let title = document.createElement("h2");
