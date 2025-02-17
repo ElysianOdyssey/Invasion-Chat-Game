@@ -87,9 +87,21 @@ function showPage(page) {
         default:
             title.textContent = "Welcome to Odyssey Quest";
             desc.textContent = "Select a menu option above.";
+            showButtons(content);
     }
     content.appendChild(title);
     content.appendChild(desc);
+}
+
+function showButtons(content) {
+    let buttons = ["!join", "!depart", "!land", "!changecourse", "!explore", "!mine", "!scan", "!return"];
+    buttons.forEach(cmd => {
+        let btn = document.createElement("button");
+        btn.textContent = cmd;
+        btn.className = "button";
+        btn.onclick = () => console.log(`Command Sent: ${cmd}`);
+        content.appendChild(btn);
+    });
 }
 
 document.addEventListener("DOMContentLoaded", initialize);
