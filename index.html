@@ -102,7 +102,7 @@
         }
 
         function initialize() {
-            console.log("📌 Initializing...");
+            console.log("📌 Initializing Twitch Panel UI...");
             if (isTwitch && typeof Twitch.ext !== "undefined") {
                 console.log("✅ Running inside Twitch.");
                 Twitch.ext.onAuthorized((auth) => {
@@ -115,7 +115,7 @@
                     playerUsername = auth.userId ? `User-${auth.userId}` : "Unknown Player";
                     document.getElementById("status").textContent = `Welcome, ${playerUsername}!`;
                     twitchLoaded = true;
-                    showPage("mission");
+                    setTimeout(() => showPage("mission"), 1000); // Ensure UI renders after Twitch auth
                 });
                 Twitch.ext.onContext((context) => {
                     console.log("✅ Twitch Extension Context Loaded:", context);
@@ -146,14 +146,6 @@
                 case "mission":
                     title.textContent = "Mission Control";
                     desc.textContent = "Manage your space exploration missions.";
-                    let buttons = ["!join", "!depart", "!land", "!changecourse", "!explore", "!mine", "!scan", "!return"];
-                    buttons.forEach(cmd => {
-                        let btn = document.createElement("button");
-                        btn.textContent = cmd;
-                        btn.className = "button";
-                        btn.onclick = () => console.log(`Command Sent: ${cmd}`);
-                        content.appendChild(btn);
-                    });
                     break;
                 case "ship":
                     title.textContent = "Ship Status";
