@@ -1,60 +1,19 @@
-let isTwitch = false;
-if (typeof Twitch !== "undefined" && Twitch.ext) {
-    isTwitch = true;
-}
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("📌 Odyssey Quest Panel Loaded");
 
-const CHANNEL_NAME = "#elysian_odyssey";
-let playerUsername = "Unknown Player";
-let twitchLoaded = false;
-let twitchRetryCount = 0;
-
-function retryTwitchAPI() {
-    if (twitchRetryCount < 3) {
-        console.warn("⚠️ Twitch API failed to load. Retrying in 3 seconds...");
-        twitchRetryCount++;
-        setTimeout(() => {
-            let script = document.createElement("script");
-            script.src = "https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js";
-            script.defer = true;
-            script.onerror = retryTwitchAPI;
-            document.head.appendChild(script);
-        }, 3000);
-    } else {
-        console.error("❌ Twitch API failed to load after multiple attempts.");
-        document.getElementById("status").textContent = "Twitch API Unavailable";
+    let content = document.getElementById("content");
+    if (!content) {
+        console.error("❌ Content container not found.");
+        return;
     }
-}
 
-function initialize() {
-    console.log("📌 Initializing Twitch Panel UI...");
-    if (isTwitch && typeof Twitch.ext !== "undefined") {
-        console.log("✅ Running inside Twitch.");
-        Twitch.ext.onAuthorized((auth) => {
-            if (!auth) {
-                console.error("❌ Twitch Authorization Failed.");
-                document.getElementById("status").textContent = "Authorization Error";
-                return;
-            }
-            console.log("✅ Twitch Extension Authorized:", auth);
-            playerUsername = auth.userId ? `User-${auth.userId}` : "Unknown Player";
-            document.getElementById("status").textContent = `Welcome, ${playerUsername}!`;
-            twitchLoaded = true;
-            setTimeout(() => showPage("mission"), 1000); // Ensure UI renders after Twitch auth
-        });
-
-        Twitch.ext.onContext((context) => {
-            console.log("✅ Twitch Extension Context Loaded:", context);
-        });
-    } else {
-        console.log("🌍 Running in a normal browser.");
-        document.getElementById("status").textContent = "Welcome, Explorer!";
-        showPage("mission");
-    }
-}
+    showPage("mission");
+});
 
 function showPage(page) {
     let content = document.getElementById("content");
     if (!content) return;
+
     content.innerHTML = "";
     let title = document.createElement("h2");
     let desc = document.createElement("p");
@@ -71,14 +30,7 @@ function showPage(page) {
         case "mission":
             title.textContent = "Mission Control";
             desc.textContent = "Manage your space exploration missions.";
-            let buttons = ["!join", "!depart", "!land", "!changecourse", "!explore", "!mine", "!scan", "!return"];
-            buttons.forEach(cmd => {
-                let btn = document.createElement("button");
-                btn.textContent = cmd;
-                btn.className = "button";
-                btn.onclick = () => console.log(`Command Sent: ${cmd}`);
-                content.appendChild(btn);
-            });
+            showButtons(content);
             break;
         case "ship":
             title.textContent = "Ship Status";
@@ -99,9 +51,7 @@ function showButtons(content) {
         let btn = document.createElement("button");
         btn.textContent = cmd;
         btn.className = "button";
-        btn.onclick = () => console.log(`Command Sent: ${cmd}`);
+        btn.onclick = () => console.log(`✅ Button Clicked: ${cmd}`);
         content.appendChild(btn);
     });
 }
-
-document.addEventListener("DOMContentLoaded", initialize);
