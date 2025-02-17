@@ -10,7 +10,7 @@
             isTwitch = true;
         }
     </script>
-    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js" defer onerror="twitchError()"></script>
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js" defer onerror="retryTwitchAPI()"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -82,10 +82,23 @@
         const CHANNEL_NAME = "#elysian_odyssey";
         let playerUsername = "Unknown Player";
         let twitchLoaded = false;
-
-        function twitchError() {
-            console.error("❌ Failed to load Twitch API. Running in browser mode.");
-            document.getElementById("status").textContent = "Twitch API Unavailable";
+        let twitchRetryCount = 0;
+        
+        function retryTwitchAPI() {
+            if (twitchRetryCount < 3) {
+                console.warn("⚠️ Twitch API failed to load. Retrying in 3 seconds...");
+                twitchRetryCount++;
+                setTimeout(() => {
+                    let script = document.createElement("script");
+                    script.src = "https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js";
+                    script.defer = true;
+                    script.onerror = retryTwitchAPI;
+                    document.head.appendChild(script);
+                }, 3000);
+            } else {
+                console.error("❌ Twitch API failed to load after multiple attempts.");
+                document.getElementById("status").textContent = "Twitch API Unavailable";
+            }
         }
 
         function initialize() {
