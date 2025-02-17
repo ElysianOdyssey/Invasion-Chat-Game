@@ -71,6 +71,14 @@ function showPage(page) {
         case "mission":
             title.textContent = "Mission Control";
             desc.textContent = "Manage your space exploration missions.";
+            let buttons = ["!join", "!depart", "!land", "!changecourse", "!explore", "!mine", "!scan", "!return"];
+            buttons.forEach(cmd => {
+                let btn = document.createElement("button");
+                btn.textContent = cmd;
+                btn.className = "button";
+                btn.onclick = () => console.log(`Command Sent: ${cmd}`);
+                content.appendChild(btn);
+            });
             break;
         case "ship":
             title.textContent = "Ship Status";
