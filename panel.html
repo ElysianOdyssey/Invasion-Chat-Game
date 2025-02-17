@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odyssey Quest</title>
+    <link rel="stylesheet" href="panel.css">
+    <script defer src="panel.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+        <button class="nav-button" onclick="showPage('log')">Navigation Log</button>
+        <button class="nav-button" onclick="showPage('inventory')">Inventory</button>
+        <button class="nav-button" onclick="showPage('mission')">Mission Control</button>
+        <button class="nav-button" onclick="showPage('ship')">Ship</button>
+    </div>
+
+    <!-- Content Container -->
+    <div id="content" class="container">
+        <h1>Odyssey Quest</h1>
+        <p id="status">Loading...</p>
+    </div>
+</body>
+</html>
