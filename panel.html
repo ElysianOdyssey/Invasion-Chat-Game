@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Odyssey Quest</title>
+    <title>PCG Panel</title>
     <link rel="stylesheet" href="panel.css">
     <script defer src="panel.js"></script>
 </head>
 <body>
-    <!-- Navigation Bar -->
+    <!-- Navigation Bar (PCG Style) -->
     <div class="nav-bar">
-        <button class="nav-button" onclick="showPage('log')">Navigation Log</button>
+        <button class="nav-button" onclick="showPage('missions')">Missions</button>
+        <button class="nav-button" onclick="showPage('pokemon')">Pokémon</button>
         <button class="nav-button" onclick="showPage('inventory')">Inventory</button>
-        <button class="nav-button" onclick="showPage('mission')">Mission Control</button>
-        <button class="nav-button" onclick="showPage('ship')">Ship</button>
+        <button class="nav-button" onclick="showPage('store')">Store</button>
     </div>
 
     <!-- Main Content -->
     <div id="content" class="container">
-        <h1>Odyssey Quest</h1>
+        <h1>Pokémon Community Game</h1>
         <div class="status-box" id="status">Loading...</div>
     </div>
 </body>
