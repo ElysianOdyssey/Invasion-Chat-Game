@@ -18,10 +18,12 @@ function showPage(page) {
         case "log":
             title.textContent = "Navigation Log";
             desc.textContent = "Tracking missions and outcomes...";
+            content.appendChild(createScrollableSection());
             break;
         case "inventory":
             title.textContent = "Inventory";
             desc.textContent = "Displaying collected items...";
+            content.appendChild(createScrollableSection());
             break;
         case "mission":
             title.textContent = "Mission Control";
@@ -50,4 +52,11 @@ function showButtons(content) {
         btn.onclick = () => console.log(`✅ Button Clicked: ${cmd}`);
         content.appendChild(btn);
     });
+}
+
+function createScrollableSection() {
+    let div = document.createElement("div");
+    div.className = "scrollable";
+    div.innerHTML = "<p>Loading data...</p>";
+    return div;
 }
