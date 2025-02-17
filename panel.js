@@ -36,4 +36,27 @@ function showPage(page) {
             content.appendChild(createScrollableSection());
             break;
         default:
-      
+            title.textContent = "Welcome to Pokémon Community Game";
+            desc.textContent = "Select a menu option above.";
+            showButtons(content, ["!start", "!catch", "!battle"]);
+    }
+    content.appendChild(title);
+    content.appendChild(desc);
+}
+
+function showButtons(content, commands) {
+    commands.forEach(cmd => {
+        let btn = document.createElement("button");
+        btn.textContent = cmd;
+        btn.className = "button";
+        btn.onclick = () => console.log(`✅ Button Clicked: ${cmd}`);
+        content.appendChild(btn);
+    });
+}
+
+function createScrollableSection() {
+    let div = document.createElement("div");
+    div.className = "scrollable";
+    div.innerHTML = "<p>Loading data...</p>";
+    return div;
+}
